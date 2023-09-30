@@ -16,7 +16,8 @@ export const itemRouter = createTRPCRouter({
 		.input(
 			z.object({
 				name: z.string(),
-				description: z.string()
+				description: z.string(),
+				location: z.string(),
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
@@ -24,6 +25,7 @@ export const itemRouter = createTRPCRouter({
 				data: {
 					name: input.name,
 					description: input.description,
+					location: input.location,
 					reportedById: ctx.session.user.id,
 					claimedById: null,
 				}

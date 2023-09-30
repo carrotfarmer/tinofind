@@ -18,6 +18,7 @@ model Item {
     id          Int    @id @default(autoincrement())
     name        String
     description String
+    location    String
 
     claimedBy  User? @relation(name: "claimedBy", fields: [claimedById], references: [id])
     reportedBy User? @relation(name: "reportedBy", fields: [reportedById], references: [id], onDelete: Cascade)
