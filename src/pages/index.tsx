@@ -5,14 +5,9 @@ import { ReportLostItem } from "~/components/item/ReportLostItem";
 import { Loading } from "~/components/Loading";
 
 import { api } from "~/utils/api";
+import { Feed } from "~/components/Feed";
 
 export default function Home() {
-	const { data: itemsData, isLoading } = api.item.getItems.useQuery();
-
-	if (isLoading) {
-		return <Loading />
-	}
-
 	return (
 		<>
 			<Head>
@@ -23,7 +18,7 @@ export default function Home() {
 			<Navbar />
 			<main>
 				<div className="pt-5">
-					<ReportLostItem />
+					<Feed />
 				</div>
 			</main>
 		</>
