@@ -69,4 +69,21 @@ export const itemRouter = createTRPCRouter({
 				},
 			});
 		}),
+
+	claimItem: protectedProcedure
+		.input(
+			z.object({
+				itemId: z.number(),
+			})
+		)
+		.mutation(async ({ ctx, input }) => {
+			return await ctx.db.item.update({
+				where: {
+					id: input.itemId,
+				},
+				data: {
+					claimedById: ctx.session.user.id,
+				}
+			})
+		}),
 });
