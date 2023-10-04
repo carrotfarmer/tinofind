@@ -1,5 +1,6 @@
 import type { NextPage } from "next";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 import { useSession } from "next-auth/react";
 import { api } from "~/utils/api";
@@ -16,16 +17,46 @@ import {
 	CardHeader,
 	CardTitle,
 } from "~/components/ui/card";
+
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "~/components/ui/alert-dialog";
+
 import { Button } from "~/components/ui/button";
-import { Contact } from "lucide-react";
-import Link from "next/link";
+import { useToast } from "~/components/ui/use-toast";
+
+import { Check, Contact } from "lucide-react";
+import { useState } from "react";
 
 const ClaimsPage: NextPage = () => {
+	const [isConfirmationOpen, setIsConfirmationOpen] = useState<boolean>(false);
+
 	const router = useRouter();
+	const { toast } = useToast();
+
 	const { data: sessionData, status } = useSession();
 
 	const { data: reportedItemsData, isLoading } =
 		api.item.getUserReportedItems.useQuery();
+
+	const utils = api.useContext();
+	const { mutate: markAsFound } = api.item.markAsFound.useMutation({
+		onSuccess: async () => {
+			await utils.invalidate();
+
+			toast({
+				title: "item has been claimed",
+				description: "the item has been claimed",
+			});
+		},
+	});
 
 	if (status === "loading" || isLoading) {
 		return <Loading />;
@@ -49,6 +80,29 @@ const ClaimsPage: NextPage = () => {
 
 				{reportedItemsData?.map((item) => (
 					<div className="flex justify-center pt-5" key={item.id}>
+						<AlertDialog
+							open={isConfirmationOpen}
+							onOpenChange={setIsConfirmationOpen}
+						>
+							<AlertDialogContent>
+								<AlertDialogHeader>
+									<AlertDialogTitle>
+										Are you sure you want to mark this item as found?
+									</AlertDialogTitle>
+									<AlertDialogDescription>
+										This action cannot be reversed. Please make sure the item has been
+										returned to the owner before marking it as found.
+									</AlertDialogDescription>
+								</AlertDialogHeader>
+								<AlertDialogFooter>
+									<AlertDialogCancel>Cancel</AlertDialogCancel>
+									<AlertDialogAction onClick={() => markAsFound({ itemId: item.id })}>
+										Continue
+									</AlertDialogAction>
+								</AlertDialogFooter>
+							</AlertDialogContent>
+						</AlertDialog>
+
 						<Card className="w-[500px]">
 							<CardHeader>
 								<CardTitle>{item.name}</CardTitle>
@@ -58,7 +112,8 @@ const ClaimsPage: NextPage = () => {
 								{item.claimedBy ? (
 									<div className="text-sm text-red-700">
 										This item is claimed by a user: <br /> Name:{" "}
-										<b>{item.claimedBy.name}</b><br />
+										<b>{item.claimedBy.name}</b>
+										<br />
 										Email: <b>{item.claimedBy.email}</b>
 									</div>
 								) : (
@@ -72,6 +127,11 @@ const ClaimsPage: NextPage = () => {
 											<Contact className="mr-2 h-4 w-4" /> contact owner
 										</Button>
 									</Link>
+									<div className="pl-2">
+										<Button variant="outline" onClick={() => setIsConfirmationOpen(true)}>
+											<Check className="mr-2 h-4 w-4" /> mark item as returned
+										</Button>
+									</div>
 								</CardFooter>
 							)}
 						</Card>

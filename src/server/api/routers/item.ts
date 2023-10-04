@@ -97,4 +97,19 @@ export const itemRouter = createTRPCRouter({
 			}
 		});
 	}),
+
+	markAsFound: protectedProcedure
+		.input(
+			z.object({
+				itemId: z.number(),
+			})
+		)
+		.mutation(async ({ ctx, input }) => {
+			return await ctx.db.item.delete({
+				where: {
+					id: input.itemId,
+					reportedById: ctx.session.user.id,
+				},
+			});
+		})
 });
