@@ -14,6 +14,7 @@ import { z } from "zod";
 import { useRouter } from "next/navigation";
 import { api } from "~/utils/api";
 import { useToast } from "~/components/ui/use-toast";
+import { PageHead } from "~/components/PageHead";
 
 const formSchema = z.object({
 	itemName: z
@@ -55,8 +56,9 @@ const ReportPage: NextPage = () => {
 
 			toast({
 				title: "successfully reported item",
-				description: "hope you find it soon!",
 			});
+
+			reset();
 		},
 		onError: (error) => {
 			toast({
@@ -74,7 +76,9 @@ const ReportPage: NextPage = () => {
 	if (!sessionData) {
 		return (
 			<>
+				<PageHead title="Report Lost Item | tinofind" />
 				<Navbar />
+
 				<div className="flex justify-center pt-5">
 					<p>sign in to report a lost item</p>
 				</div>

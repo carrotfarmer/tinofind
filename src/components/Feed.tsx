@@ -1,10 +1,12 @@
-import React from 'react'
+import React from "react";
 
-import { api } from '~/utils/api';
-import { Button } from './ui/button';
+import { api } from "~/utils/api";
+import { Button } from "./ui/button";
 
-import { ReportLostItem } from './item/ReportLostItem';
-import { Item } from './item/Item';
+import { ReportLostItem } from "./item/ReportLostItem";
+import { Item } from "./item/Item";
+import type { Item as ItemType, User } from "@prisma/client";
+import { ItemClaims } from "./item/ItemClaims";
 
 export const Feed: React.FC = ({ }) => {
 	const postsQuery = api.item.getItems.useInfiniteQuery(
@@ -13,8 +15,7 @@ export const Feed: React.FC = ({ }) => {
 		},
 		{
 			getNextPageParam: (lastPage) => lastPage.nextCursor,
-			// initialCursor: 1, // <-- optional you can pass an initialCursor
-		}
+		},
 	);
 
 	const items = postsQuery.data?.pages.flatMap((page) => page.items) ?? [];
@@ -25,12 +26,20 @@ export const Feed: React.FC = ({ }) => {
 
 			<div className="flex justify-center pt-5">
 				<div className="w-full max-w-xl">
-					{items ? items.map((item) => (
-						<Item key={item.id} item={item} />
-					)) : (
-						<div className="text-red-500 font-bold">
-							could not load items
-						</div>
+					{items ? (
+						items.map((item) => (
+							<Item
+								key={item.id}
+								item={
+									item as ItemType & {
+										claimedBy: User | null;
+										reportedBy: User;
+									}
+								}
+							/>
+						))
+					) : (
+						<div className="font-bold text-red-500">could not load items</div>
 					)}
 					{postsQuery.hasNextPage && (
 						<div className="flex justify-center pt-5">
@@ -46,4 +55,4 @@ export const Feed: React.FC = ({ }) => {
 			</div>
 		</div>
 	);
-}
+};

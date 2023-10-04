@@ -74,7 +74,7 @@ export const itemRouter = createTRPCRouter({
 		.input(
 			z.object({
 				itemId: z.number(),
-			})
+			}),
 		)
 		.mutation(async ({ ctx, input }) => {
 			return await ctx.db.item.update({
@@ -83,7 +83,18 @@ export const itemRouter = createTRPCRouter({
 				},
 				data: {
 					claimedById: ctx.session.user.id,
-				}
-			})
+				},
+			});
 		}),
+
+	getUserReportedItems: protectedProcedure.query(async ({ ctx }) => {
+		return await ctx.db.item.findMany({
+			where: {
+				reportedById: ctx.session.user.id,
+			},
+			include: {
+				claimedBy: true,
+			}
+		});
+	}),
 });

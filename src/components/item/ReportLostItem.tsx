@@ -12,7 +12,10 @@ export const ReportLostItem: React.FC = ({ }) => {
 		<div>
 			<div className="flex justify-center">
 				{sessionData ? (
-					<Button onClick={() => void router.push("/report")}>report a lost item</Button>
+					<div className="grid grid-cols-2 gap-4">
+						<Button onClick={() => void router.push("/report")}>report a lost item</Button>
+						<Button onClick={() => void router.push("/claims")}>item claims</Button>
+					</div>
 				) : (
 					<Button disabled>sign in to report a lost item</Button>
 				)}
