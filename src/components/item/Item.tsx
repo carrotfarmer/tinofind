@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Image from "next/image"
 
 import type { Item as ItemType, User } from "@prisma/client";
 import { api } from "~/utils/api";
@@ -16,6 +17,7 @@ import {
 
 import { Button } from "../ui/button";
 import { useToast } from "../ui/use-toast";
+import Link from "next/link";
 
 interface ItemProps {
 	item: ItemType & {
@@ -36,9 +38,10 @@ export const Item: React.FC<ItemProps> = ({ item }) => {
 
 			toast({
 				title: "Claimed Item",
-				description: "You have successfully claimed this item. Your email and other information has been shared with the reporter.",
+				description:
+					"You have successfully claimed this item. Your email and other information has been shared with the reporter.",
 				duration: 10000,
-			})
+			});
 		},
 	});
 
@@ -61,7 +64,9 @@ export const Item: React.FC<ItemProps> = ({ item }) => {
 					</AlertDialogHeader>
 					<AlertDialogFooter>
 						<AlertDialogCancel>Cancel</AlertDialogCancel>
-						<AlertDialogAction onClick={() => claimItem({ itemId: item.id })}>Continue</AlertDialogAction>
+						<AlertDialogAction onClick={() => claimItem({ itemId: item.id })}>
+							Continue
+						</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>
 			</AlertDialog>
@@ -81,6 +86,13 @@ export const Item: React.FC<ItemProps> = ({ item }) => {
 				<div className="pt-2 text-sm text-gray-500">
 					Last seen at <b>{item.location}</b>
 				</div>
+				{item.picture && (
+					<div className="pt-2">
+					<Link href={item.picture} target="_blank">
+						<Image src={item.picture} alt="item picture" width={300} height={300} />
+					</Link>
+					</div>
+				)}
 				{!item.claimedBy && (
 					<div className="pt-2">
 						<Button
