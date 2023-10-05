@@ -56,6 +56,7 @@ export const itemRouter = createTRPCRouter({
 				name: z.string(),
 				description: z.string(),
 				location: z.string(),
+				pictureUrl: z.string().url().optional(),
 			}),
 		)
 		.mutation(async ({ ctx, input }) => {
@@ -65,6 +66,7 @@ export const itemRouter = createTRPCRouter({
 					description: input.description,
 					location: input.location,
 					reportedById: ctx.session.user.id,
+					picture: input.pictureUrl,
 					claimedById: null,
 				},
 			});
@@ -94,7 +96,7 @@ export const itemRouter = createTRPCRouter({
 			},
 			include: {
 				claimedBy: true,
-			}
+			},
 		});
 	}),
 
@@ -102,7 +104,7 @@ export const itemRouter = createTRPCRouter({
 		.input(
 			z.object({
 				itemId: z.number(),
-			})
+			}),
 		)
 		.mutation(async ({ ctx, input }) => {
 			return await ctx.db.item.delete({
@@ -111,5 +113,5 @@ export const itemRouter = createTRPCRouter({
 					reportedById: ctx.session.user.id,
 				},
 			});
-		})
+		}),
 });

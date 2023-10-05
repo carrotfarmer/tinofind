@@ -6,7 +6,6 @@ import { Button } from "./ui/button";
 import { ReportLostItem } from "./item/ReportLostItem";
 import { Item } from "./item/Item";
 import type { Item as ItemType, User } from "@prisma/client";
-import { ItemClaims } from "./item/ItemClaims";
 
 export const Feed: React.FC = ({ }) => {
 	const postsQuery = api.item.getItems.useInfiniteQuery(
