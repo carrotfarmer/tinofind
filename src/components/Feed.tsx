@@ -5,7 +5,7 @@ import { Button } from "./ui/button";
 
 import { ReportLostItem } from "./item/ReportLostItem";
 import { Item } from "./item/Item";
-import type { Item as ItemType, User } from "@prisma/client";
+import { ItemType } from "~/types";
 
 export const Feed: React.FC = ({ }) => {
 	const postsQuery = api.item.getItems.useInfiniteQuery(
@@ -29,12 +29,7 @@ export const Feed: React.FC = ({ }) => {
 						items.map((item) => (
 							<Item
 								key={item.id}
-								item={
-									item as ItemType & {
-										claimedBy: User | null;
-										reportedBy: User;
-									}
-								}
+								item={item as ItemType}
 							/>
 						))
 					) : (

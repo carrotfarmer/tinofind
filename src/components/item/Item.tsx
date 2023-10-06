@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import Image from "next/image"
+import Image from "next/image";
 
-import type { Item as ItemType, User } from "@prisma/client";
 import { api } from "~/utils/api";
+import type { ItemType } from "~/types";
 
 import {
 	AlertDialog,
@@ -21,10 +21,7 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 
 interface ItemProps {
-	item: ItemType & {
-		reportedBy: User;
-		claimedBy: User | null;
-	};
+	item: ItemType;
 }
 
 export const Item: React.FC<ItemProps> = ({ item }) => {
@@ -91,11 +88,16 @@ export const Item: React.FC<ItemProps> = ({ item }) => {
 				{item.picture && (
 					<div className="pt-2">
 						<Link href={item.picture} target="_blank">
-							<Image src={item.picture} alt="item picture" width={300} height={300} />
+							<Image
+								src={item.picture}
+								alt="item picture"
+								width={300}
+								height={300}
+							/>
 						</Link>
 					</div>
 				)}
-				{(sessionData && !item.claimedBy) && (
+				{sessionData && !item.claimedBy && (
 					<div className="pt-2">
 						<Button
 							variant="outline"
