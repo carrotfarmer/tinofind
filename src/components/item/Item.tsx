@@ -18,6 +18,7 @@ import {
 import { Button } from "../ui/button";
 import { useToast } from "../ui/use-toast";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 interface ItemProps {
 	item: ItemType & {
@@ -27,9 +28,10 @@ interface ItemProps {
 }
 
 export const Item: React.FC<ItemProps> = ({ item }) => {
-	const [isConfirmationOpen, setIsConfirmationOpen] = useState<boolean>(false);
-
+	const { data: sessionData } = useSession();
 	const { toast } = useToast();
+
+	const [isConfirmationOpen, setIsConfirmationOpen] = useState<boolean>(false);
 
 	const utils = api.useContext();
 	const { mutate: claimItem } = api.item.claimItem.useMutation({
@@ -88,12 +90,12 @@ export const Item: React.FC<ItemProps> = ({ item }) => {
 				</div>
 				{item.picture && (
 					<div className="pt-2">
-					<Link href={item.picture} target="_blank">
-						<Image src={item.picture} alt="item picture" width={300} height={300} />
-					</Link>
+						<Link href={item.picture} target="_blank">
+							<Image src={item.picture} alt="item picture" width={300} height={300} />
+						</Link>
 					</div>
 				)}
-				{!item.claimedBy && (
+				{(sessionData && !item.claimedBy) && (
 					<div className="pt-2">
 						<Button
 							variant="outline"

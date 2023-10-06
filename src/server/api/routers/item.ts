@@ -5,6 +5,7 @@ import {
 } from "~/server/api/trpc";
 
 import { z } from "zod";
+import { ItemType } from "~/types";
 
 export const itemRouter = createTRPCRouter({
 	getItems: publicProcedure
@@ -114,4 +115,16 @@ export const itemRouter = createTRPCRouter({
 				},
 			});
 		}),
+
+	allItems: protectedProcedure
+		.query(async ({ ctx }): Promise<ItemType[]> => {
+			const items = await ctx.db.item.findMany({
+				include: {
+					reportedBy: true,
+					claimedBy: true,
+				}
+			});
+
+			return items as ItemType[];
+		})
 });
