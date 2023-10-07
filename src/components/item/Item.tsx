@@ -63,9 +63,11 @@ export const Item: React.FC<ItemProps> = ({ item }) => {
 					</AlertDialogHeader>
 					<AlertDialogFooter>
 						<AlertDialogCancel>Cancel</AlertDialogCancel>
-						<AlertDialogAction onClick={() => claimItem({ itemId: item.id })}>
-							Continue
-						</AlertDialogAction>
+						<div className="pt-2">
+							<AlertDialogAction onClick={() => claimItem({ itemId: item.id })}>
+								Continue
+							</AlertDialogAction>
+						</div>
 					</AlertDialogFooter>
 				</AlertDialogContent>
 			</AlertDialog>
@@ -85,7 +87,7 @@ export const Item: React.FC<ItemProps> = ({ item }) => {
 				<div className="pt-2 text-sm text-gray-500">
 					Last seen at <b>{item.location}</b>
 				</div>
-				{item.picture && (
+				{(item.picture && item.picture !== "") && (
 					<div className="pt-2">
 						<Link href={item.picture} target="_blank">
 							<Image

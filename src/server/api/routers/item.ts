@@ -57,17 +57,20 @@ export const itemRouter = createTRPCRouter({
 				name: z.string(),
 				description: z.string(),
 				location: z.string(),
-				pictureUrl: z.string().url().optional(),
+				pictureUrl: z.string().optional(),
 			}),
 		)
 		.mutation(async ({ ctx, input }) => {
+			let pictureUrl;
+			!input.pictureUrl ? pictureUrl = "" : pictureUrl = input.pictureUrl;
+
 			return await ctx.db.item.create({
 				data: {
 					name: input.name,
 					description: input.description,
 					location: input.location,
 					reportedById: ctx.session.user.id,
-					picture: input.pictureUrl,
+					picture: pictureUrl,
 					claimedById: null,
 				},
 			});
