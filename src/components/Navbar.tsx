@@ -3,6 +3,7 @@ import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 import { Button } from "./ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 export const Navbar: React.FC = () => {
 	const { data: sessionData, status } = useSession();
@@ -16,13 +17,22 @@ export const Navbar: React.FC = () => {
 					</Link>
 				</div>
 				<div className="flex items-center">
-					<div className="grid grid-cols-2">
-						{status === "loading" ? <Button disabled>loading</Button> :
-							sessionData ? (
-								<Button onClick={() => void signOut()}>sign out</Button>
-							) : (
-								<Button onClick={() => void signIn()}>sign in</Button>
+					<div className="grid grid-cols-2 gap-4">
+						<div>
+							{status === "loading" ? <Button disabled>loading</Button> :
+								sessionData ? (
+									<Button onClick={() => void signOut()}>sign out</Button>
+								) : (
+									<Button onClick={() => void signIn()}>sign in</Button>
+								)}
+						</div>
+						<div>
+							{sessionData && (
+								<Avatar>
+									<AvatarImage src={sessionData.user.image!} />
+								</Avatar>
 							)}
+						</div>
 					</div>
 				</div>
 			</div>
