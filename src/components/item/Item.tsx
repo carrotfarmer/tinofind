@@ -4,21 +4,11 @@ import Image from "next/image";
 import { api } from "~/utils/api";
 import type { ItemType } from "~/types";
 
-import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-} from "~/components/ui/alert-dialog";
-
 import { Button } from "../ui/button";
 import { useToast } from "../ui/use-toast";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { AlertDialog } from "../AlertDialog";
 
 interface ItemProps {
 	item: ItemType;
@@ -29,6 +19,8 @@ export const Item: React.FC<ItemProps> = ({ item }) => {
 	const { toast } = useToast();
 
 	const [isConfirmationOpen, setIsConfirmationOpen] = useState<boolean>(false);
+	const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] =
+		useState<boolean>(false);
 
 	const utils = api.useContext();
 	const { mutate: claimItem } = api.item.claimItem.useMutation({
@@ -44,33 +36,37 @@ export const Item: React.FC<ItemProps> = ({ item }) => {
 		},
 	});
 
+	const { mutate: deleteItem } = api.item.deleteItem.useMutation({
+		onSuccess: async () => {
+			await utils.invalidate();
+
+			toast({
+				title: "Deleted Item",
+				description: "Successfully deleted item.",
+			});
+		},
+	});
+
 	return (
 		<div className="pt-2">
 			<AlertDialog
+				title="Are you sure you want to claim this item?"
+				description="Your email and other profile information will be shared with the
+							reporter, so that they can get back to you about the item. This
+							action cannot be undone."
 				open={isConfirmationOpen}
 				onOpenChange={setIsConfirmationOpen}
-			>
-				<AlertDialogContent>
-					<AlertDialogHeader>
-						<AlertDialogTitle>
-							Are you sure you want to claim this item?
-						</AlertDialogTitle>
-						<AlertDialogDescription>
-							Your email and other profile information will be shared with the
-							reporter, so that they can get back to you about the item. This
-							action cannot be undone.
-						</AlertDialogDescription>
-					</AlertDialogHeader>
-					<AlertDialogFooter>
-						<AlertDialogCancel>Cancel</AlertDialogCancel>
-						<div className="pt-2">
-							<AlertDialogAction onClick={() => claimItem({ itemId: item.id })}>
-								Continue
-							</AlertDialogAction>
-						</div>
-					</AlertDialogFooter>
-				</AlertDialogContent>
-			</AlertDialog>
+				onConfirm={() => claimItem({ itemId: item.id })}
+			/>
+
+			<AlertDialog
+				title="Are you sure you want to delete this item?"
+				description="This action cannot be undone."
+				open={isDeleteConfirmationOpen}
+				onOpenChange={setIsDeleteConfirmationOpen}
+				onConfirm={() => deleteItem({ itemId: item.id })}
+			/>
+
 			<div className="flex flex-col rounded-md border-2 border-gray-100 bg-white p-5 shadow-sm">
 				<div className="flex flex-row gap-2">
 					<div className="text-lg font-medium text-gray-700">{item.name}</div>
@@ -87,7 +83,7 @@ export const Item: React.FC<ItemProps> = ({ item }) => {
 				<div className="pt-2 text-sm text-gray-500">
 					Last seen at <b>{item.location}</b>
 				</div>
-				{(item.picture && item.picture !== "") && (
+				{item.picture && item.picture !== "" && (
 					<div className="pt-2">
 						<Link href={item.picture} target="_blank">
 							<Image
@@ -99,14 +95,27 @@ export const Item: React.FC<ItemProps> = ({ item }) => {
 						</Link>
 					</div>
 				)}
-				{sessionData && !item.claimedBy && (
+				{sessionData &&
+					!item.claimedBy &&
+					sessionData.user.id !== item.reportedById && (
+						<div className="pt-2">
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={() => setIsConfirmationOpen(true)}
+							>
+								claim item
+							</Button>
+						</div>
+					)}
+				{sessionData!.user.id === item.reportedById && (
 					<div className="pt-2">
 						<Button
-							variant="outline"
+							variant="destructive"
 							size="sm"
-							onClick={() => setIsConfirmationOpen(true)}
+							onClick={() => setIsDeleteConfirmationOpen(true)}
 						>
-							claim item
+							delete item
 						</Button>
 					</div>
 				)}

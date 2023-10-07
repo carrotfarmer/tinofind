@@ -104,7 +104,7 @@ export const itemRouter = createTRPCRouter({
 		});
 	}),
 
-	markAsFound: protectedProcedure
+	deleteItem: protectedProcedure
 		.input(
 			z.object({
 				itemId: z.number(),
