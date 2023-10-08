@@ -108,7 +108,7 @@ export const Item: React.FC<ItemProps> = ({ item }) => {
 							</Button>
 						</div>
 					)}
-				{sessionData!.user.id === item.reportedById && (
+				{(sessionData && sessionData.user.id === item.reportedById) && (
 					<div className="pt-2">
 						<Button
 							variant="destructive"

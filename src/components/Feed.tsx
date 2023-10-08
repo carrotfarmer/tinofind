@@ -5,7 +5,7 @@ import { Button } from "./ui/button";
 
 import { ReportLostItem } from "./item/ReportLostItem";
 import { Item } from "./item/Item";
-import { ItemType } from "~/types";
+import type { ItemType } from "~/types";
 
 export const Feed: React.FC = ({ }) => {
 	const postsQuery = api.item.getItems.useInfiniteQuery(
