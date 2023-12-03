@@ -6,36 +6,37 @@ import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 export const Navbar: React.FC = () => {
-	const { data: sessionData, status } = useSession();
+  const { data: sessionData, status } = useSession();
 
-	return (
-		<div>
-			<div className="flex w-full justify-between border-b border-slate-200 p-4 shadow-md">
-				<div className="flex items-center">
-					<Link href="/">
-						<h1 className="text-red-700 text-2xl font-extrabold">tinofind</h1>
-					</Link>
-				</div>
-				<div className="flex items-center">
-					<div className="grid grid-cols-2 gap-4">
-						<div>
-							{status === "loading" ? <Button disabled>loading</Button> :
-								sessionData ? (
-									<Button onClick={() => void signOut()}>sign out</Button>
-								) : (
-									<Button onClick={() => void signIn()}>sign in</Button>
-								)}
-						</div>
-						<div>
-							{sessionData && (
-								<Avatar>
-									<AvatarImage src={sessionData.user.image!} />
-								</Avatar>
-							)}
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	)
+  return (
+    <div>
+      <div className="flex w-full justify-between border-b border-slate-200 p-4 shadow-md">
+        <div className="flex items-center">
+          <Link href="/">
+            <h1 className="text-red-700 text-2xl font-extrabold">tinofind</h1>
+          </Link>
+        </div>
+        <div className="flex items-center">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              {status === "loading" ? (
+                <Button disabled>loading</Button>
+              ) : sessionData ? (
+                <Button onClick={() => void signOut()}>sign out</Button>
+              ) : (
+                <Button onClick={() => void signIn()}>sign in</Button>
+              )}
+            </div>
+            <div>
+              {sessionData && (
+                <Avatar>
+                  <AvatarImage src={sessionData.user.image!} />
+                </Avatar>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
